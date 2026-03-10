@@ -33,6 +33,21 @@ uiState = render_dashboard(state);
 
 log_event(logger, 'INFO', 'Session artifacts exported', artifacts);
 state.current_result.log.io.logFile = logger.filePath;
+render_dashboard(state);
+
+outputMat = save_result_mat(state.current_result, fullfile('data', 'output'), 'smoke_result');
+snapshotFile = export_state_snapshot(state, fullfile('data', 'output', 'snapshots'), 'smoke_snapshot');
+summaryFile = export_result_summary(state, fullfile('data', 'output', 'summaries'), 'smoke_summary');
+
+log_event(logger, 'INFO', 'Result exported', struct('matFile', outputMat));
+log_event(logger, 'INFO', 'Snapshot exported', struct('snapshotFile', snapshotFile));
+log_event(logger, 'INFO', 'Summary exported', struct('summaryFile', summaryFile));
+
+state.current_result.log.io = struct(...
+    'logFile', logger.filePath, ...
+    'matFile', outputMat, ...
+    'snapshotFile', snapshotFile, ...
+    'summaryFile', summaryFile);
 
 fprintf('run_smoke completed. Current=%d, Selected=%d, View=%s, Preset=%s\n', ...
     state.current_frame_idx, state.selected_frame_idx, state.current_view, state.current_preset);

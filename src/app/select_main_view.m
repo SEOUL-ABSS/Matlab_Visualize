@@ -5,6 +5,7 @@ validateattributes(viewName, {'char', 'string'}, {'nonempty'}, mfilename, 'viewN
 viewName = char(viewName);
 
 allowedViews = {'Spectrum', 'Waterfall', 'Peak Trend', 'Compare', 'Frame Quality', 'Bearing Map', 'Bearing Frequency', 'Bearing Time'};
+allowedViews = {'Spectrum', 'Waterfall', 'Peak Trend', 'Compare', 'Frame Quality', 'Bearing Map'};
 if ~ismember(viewName, allowedViews)
     error('select_main_view:UnknownView', 'Unknown main view: %s', viewName);
 end
@@ -21,4 +22,7 @@ if strcmp(viewName, 'Spectrum') || strcmp(viewName, 'Peak Trend')
 end
 
 state = update_event_log(state, 'INFO', sprintf('View selected: %s', viewName));
+entry = struct('time', datetime('now'), 'level', 'INFO', 'message', sprintf('View selected: %s', viewName));
+state.event_log{end+1} = entry;
+state.last_update_time = entry.time;
 end

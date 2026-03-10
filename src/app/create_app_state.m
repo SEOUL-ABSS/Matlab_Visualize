@@ -27,6 +27,9 @@ state.tcp = struct(...
     'packet_meta_history', {{}}, ...
     'status', 'idle');
 
+state.current_input = struct();
+state.current_result = struct();
+
 % Cached history for frame-centric inspection views.
 state.waterfall = struct(...
     'frequencyHz', [], ...
@@ -75,4 +78,20 @@ state.last_update_time = NaT;
 state.last_issue = struct('level', '', 'message', '');
 state.last_error_or_warning = struct('level', '', 'message', '');
 state.last_exports = struct('figurePng', '', 'resultMat', '', 'snapshotMat', '', 'summaryCsv', '');
+    'hold_enabled', false, ...
+    'hold_frame_indices', []);
+state.frame_history = {};
+state.quality_history = [];
+state.peak_trend = [];
+state.bearing = build_bearing_maps_placeholder(state);
+
+state.frame_quality_summary = struct(...
+    'rms', NaN, ...
+    'peakAmplitude', NaN, ...
+    'clippingRatio', NaN, ...
+    'qualityLabel', 'unknown');
+
+state.event_log = {};
+state.last_update_time = NaT;
+state.last_issue = struct('level', '', 'message', '');
 end
