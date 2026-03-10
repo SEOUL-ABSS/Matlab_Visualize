@@ -27,6 +27,12 @@ end
 state = step_frame(state, -1);
 state = configure_waterfall_hold(state, true, [1 state.selected_frame_idx]);
 state = select_main_view(state, 'Waterfall');
+uiState = render_dashboard(state);
+
+[state, artifacts] = export_session_artifacts(state, uiState.figure, fullfile('data', 'output'), 'smoke');
+
+log_event(logger, 'INFO', 'Session artifacts exported', artifacts);
+state.current_result.log.io.logFile = logger.filePath;
 render_dashboard(state);
 
 outputMat = save_result_mat(state.current_result, fullfile('data', 'output'), 'smoke_result');
