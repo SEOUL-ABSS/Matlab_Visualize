@@ -1,6 +1,7 @@
 function example_rx_tools_usage()
 %EXAMPLE_RX_TOOLS_USAGE save/log/plot 파이프라인 사용 예시.
 
+setup_project_paths();
 headerPath = 'your_protocol_header.h';
 
 srv = EthTcpServer('Port', 5000, 'ChecksumMode', 'byte');

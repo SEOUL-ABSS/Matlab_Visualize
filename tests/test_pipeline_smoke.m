@@ -12,7 +12,6 @@ classdef test_pipeline_smoke < matlab.unittest.TestCase
             result = execute_pipeline(inputData, cfg);
 
             expectedFields = {'raw','preprocessed','features','peaks','compare','display','log','meta'};
-            expectedFields = {'raw','preprocessed','features','peaks','display','log','meta'};
             for i = 1:numel(expectedFields)
                 testCase.verifyTrue(isfield(result, expectedFields{i}), ...
                     sprintf('Missing result.%s', expectedFields{i}));
@@ -40,9 +39,6 @@ classdef test_pipeline_smoke < matlab.unittest.TestCase
                 'frame_history','quality_history','detection_history','peak_trend','bearing', ...
                 'frame_quality_summary','detection_summary','event_log','last_update_time', ...
                 'last_issue','last_error_or_warning','last_exports','tcp'};
-                'threshold_enabled','threshold_value','current_input','current_result','waterfall', ...
-                'frame_history','quality_history','peak_trend','bearing', ...
-                'frame_quality_summary','event_log','last_update_time','last_issue'};
             for i = 1:numel(expectedStateFields)
                 testCase.verifyTrue(isfield(state, expectedStateFields{i}), ...
                     sprintf('Missing state.%s', expectedStateFields{i}));
@@ -158,12 +154,6 @@ classdef test_pipeline_smoke < matlab.unittest.TestCase
         end
 
         function sessionExportCreatesExpectedArtifacts(testCase)
-            testCase.verifyEqual(numel(state.peak_trend), 3);
-            testCase.verifyTrue(state.waterfall.hold_enabled);
-            testCase.verifyEqual(state.waterfall.hold_frame_indices, [1 3]);
-        end
-
-        function summaryAndSnapshotExportCreateFiles(testCase)
             cfg = get_default_config();
             state = create_app_state();
             inputData = struct(...
@@ -186,11 +176,6 @@ classdef test_pipeline_smoke < matlab.unittest.TestCase
             testCase.verifyTrue(exist(artifacts.figurePng, 'file') == 2);
             testCase.verifyGreaterThanOrEqual(numel(state.event_log), 4);
             testCase.verifyEqual(state.last_exports.summaryCsv, artifacts.summaryCsv);
-            snapshotFile = export_state_snapshot(state, fullfile('data', 'output', 'snapshots'), 'unit_snapshot');
-            summaryFile = export_result_summary(state, fullfile('data', 'output', 'summaries'), 'unit_summary');
-
-            testCase.verifyTrue(exist(snapshotFile, 'file') == 2);
-            testCase.verifyTrue(exist(summaryFile, 'file') == 2);
         end
     end
 end

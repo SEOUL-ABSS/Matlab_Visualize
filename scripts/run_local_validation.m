@@ -19,10 +19,7 @@ end
 mode = char(string(mode));
 validatestring(mode, {'quick', 'full'}, mfilename, 'mode');
 
-repoRoot = fileparts(fileparts(mfilename('fullpath')));
-addpath(genpath(fullfile(repoRoot, 'src')));
-addpath(fullfile(repoRoot, 'tests'));
-addpath(fullfile(repoRoot, 'scripts'));
+setup_project_paths();
 
 summary = struct();
 summary.mode = mode;

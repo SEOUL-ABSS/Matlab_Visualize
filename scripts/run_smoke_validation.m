@@ -1,6 +1,7 @@
 function run_smoke_validation()
 %RUN_SMOKE_VALIDATION Execute smoke flow and assert expected artifacts exist.
 
+setup_project_paths();
 state = run_smoke();
 
 requiredFields = {'figurePng', 'resultMat', 'snapshotMat', 'summaryCsv'};

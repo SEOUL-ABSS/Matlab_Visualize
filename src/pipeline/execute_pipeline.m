@@ -55,12 +55,6 @@ else
         'spectrum', struct('raw', struct(), 'processed', struct()), ...
         'threshold', struct('pre', [], 'post', []), ...
         'meta', struct('thresholdComparisonAvailable', false, 'status', 'feature-extraction-disabled'));
-    fftResult = compute_fft(result.preprocessed.data, result.raw.fs);
-    result.features = struct('spectrum', fftResult.spectrum, 'meta', struct('status', 'computed-fft'));
-    result.peaks = fftResult.peaks;
-else
-    result.features = struct('items', [], 'meta', struct('status', 'disabled'));
-    result.peaks = struct('items', [], 'count', 0, 'meta', struct('status', 'disabled'));
 end
 
 result.display = struct('series', [], 'axes', struct(), 'meta', struct('status', 'prepared-by-visualization-layer'));

@@ -1,6 +1,8 @@
 function example_record_TestInputType()
 %EXAMPLE_RECORD_TESTINPUTTYPE TestInputType 수신/저장 예시.
 
+setup_project_paths();
+
 % 사용자 환경에 맞는 헤더 경로 지정
 headerPath = 'your_protocol_header.h';
 

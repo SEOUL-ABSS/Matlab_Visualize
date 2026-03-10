@@ -37,46 +37,12 @@
 - Bearing Time (플레이스홀더)
 
 ## 시작하기 (MATLAB)
-Modular MATLAB project for signal-processing debugging and monitoring workflows.
-
-## Project structure
-
-- `src/app/` app-shell state and workflow orchestration.
-- `src/pipeline/` processing pipeline execution and validation.
-- `src/processing/` signal-processing algorithms and spatial placeholders.
-- `src/visualization/` rendering functions (plot1d + dashboard shell).
-- `src/io/` logging and persistence helpers.
-- `tests/` MATLAB `matlab.unittest` test suites.
-- `scripts/` developer scripts.
-- `data/output/` generated logs and exports.
-
-## First app-shell step
-
-- Shared app/session state via `create_app_state`.
-- Main view selector via `select_main_view`.
-- Dashboard shell with:
-  - one main view
-  - summary card
-  - frame quality card
-  - event/status strip
-- Frame selection/stepping and synchronized summaries.
-- Cached rendering paths to avoid recomputation in plotting functions.
-
-## Current main views
-
-- Spectrum
-- Waterfall
-- Peak Trend
-- Compare
-- Frame Quality
-- Bearing Map (placeholder)
-
-## Getting started (MATLAB)
 
 ```matlab
-addpath(genpath('src'))
-run_smoke
 addpath('scripts')
+setup_project_paths
+
+run_smoke
 run_all_tests
 run_smoke_validation
 ```
@@ -92,8 +58,8 @@ MATLAB 런타임이 없는 환경에서는 정적 점검 스크립트를 사용�
 로컬에 저장소를 가져온 뒤 아래 순서로 확인하면 됩니다.
 
 ```matlab
-addpath(genpath('src'))
 addpath('scripts')
+setup_project_paths
 
 % 1) 빠른 점검(스모크 + export 확인)
 summaryQuick = run_local_validation('quick')
@@ -136,6 +102,24 @@ Apache 2.0 (`LICENSE` 참고)
 - 현재 프레임 마커는 기본 활성화되어 있고, max-hold/mean-hold 오버레이는 `state.waterfall.overlay`로 제어합니다.
 - 롤링 히스토리는 `state.waterfall.max_history_frames`(기본 `inf`)로 제어합니다.
 
+## 함수 사용 예시 모음(종류별)
+
+- 통합 예시 진입점: `scripts/example_function_groups_usage.m`
+  - Category 1: App/Session + Pipeline
+  - Category 2: Visualization + Export
+  - Category 3: TCP metadata normalize
+  - Category 4: RX callback wrappers (`eth_rx_save/log/plot/pipeline`)
+  - Category 5: `EthTcpServer` + `schemaFromHeader/registerFromHeader` 오프라인 템플릿
+
+```matlab
+addpath(genpath('src'))
+addpath('scripts')
+example_function_groups_usage
+
+% 수중 탐지 전시 데모 시나리오
+stateDemo = example_underwater_exhibition_scenario
+```
+
 ## 스냅샷/내보내기 메모
 
 - `export_session_artifacts`로 현재 대시보드 그림(`.png`), 현재 결과(`.mat`), 전체 상태 스냅샷(`.mat`), 요약(`.csv`)을 저장합니다.
@@ -166,6 +150,8 @@ Apache 2.0 (`LICENSE` 참고)
 - 예시
   - `scripts/example_record_TestInputType.m`
   - `scripts/example_rx_tools_usage.m`
+- 전시 시나리오 예시
+  - `scripts/example_underwater_exhibition_scenario.m` (수중 탐지 데모: search/approach/classify 단계)
 - 자기점검 스크립트
   - `tests/selftest_strip_preprocessor_and_schema.m`
   - `tests/selftest_nested_structs.m`

@@ -1,10 +1,8 @@
 function run_all_tests()
 %RUN_ALL_TESTS Run MATLAB unit tests and smoke validation for this project.
 
-repoRoot = fileparts(fileparts(mfilename('fullpath')));
-addpath(genpath(fullfile(repoRoot, 'src')));
-addpath(fullfile(repoRoot, 'tests'));
-addpath(fullfile(repoRoot, 'scripts'));
+paths = setup_project_paths();
+repoRoot = paths.repoRoot;
 
 testsDir = fullfile(repoRoot, 'tests');
 suite = testsuite(testsDir, 'IncludeSubfolders', true);
