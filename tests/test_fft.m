@@ -1,4 +1,22 @@
 classdef test_fft < matlab.unittest.TestCase
+
+    methods (TestClassSetup)
+        function addProjectPaths(~)
+            thisFile = mfilename('fullpath');
+            if isempty(thisFile)
+                thisFile = which(mfilename('class'));
+            end
+            if isempty(thisFile)
+                warning('TestPathSetup:UnableToResolveFile', 'Could not resolve test file path.');
+                return;
+            end
+            repoRoot = fileparts(fileparts(thisFile));
+            addpath(genpath(fullfile(repoRoot, 'src')));
+            addpath(fullfile(repoRoot, 'tests'));
+            addpath(fullfile(repoRoot, 'scripts'));
+        end
+    end
+
     methods (Test)
         function dominantPeakIsNearExpectedFrequency(testCase)
             fs = 1000;

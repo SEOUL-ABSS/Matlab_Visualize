@@ -2,35 +2,14 @@ function state = apply_preset(state, presetName)
 %APPLY_PRESET Apply app preset to shared state.
 
 validateattributes(presetName, {'char', 'string'}, {'nonempty'}, mfilename, 'presetName', 2);
-presetName = char(presetName);
+preset = get_preset_definition(presetName);
 
-switch presetName
-    case 'Quick Check'
-        state.current_view = 'Spectrum';
-        state.threshold_enabled = false;
-        state.threshold_value = 0.5;
-    case 'Detection'
-        state.current_view = 'Spectrum';
-        state.threshold_enabled = true;
-        state.threshold_value = 0.2;
-    case 'History'
-        state.current_view = 'Waterfall';
-        state.threshold_enabled = false;
-        state.threshold_value = 0.5;
-    case 'Debug'
-        state.current_view = 'Frame Quality';
-        state.threshold_enabled = true;
-        state.threshold_value = 0.1;
-    otherwise
-        error('apply_preset:UnknownPreset', 'Unknown preset: %s', presetName);
-end
+state.current_preset = preset.name;
+state.current_view = preset.defaultMainView;
+state.threshold_enabled = preset.thresholdEnabled;
+state.threshold_value = preset.thresholdValue;
+state.panel_emphasis = preset.emphasis;
 
-state.current_preset = presetName;
-state = append_event(state, 'INFO', sprintf('Preset applied: %s', presetName));
-end
-
-function state = append_event(state, level, message)
-entry = struct('time', datetime('now'), 'level', level, 'message', message);
-state.event_log{end+1} = entry;
-state.last_update_time = entry.time;
+state = update_event_log(state, 'INFO', sprintf('Preset applied: %s', preset.name), ...
+    struct('defaultView', preset.defaultMainView, 'thresholdEnabled', preset.thresholdEnabled));
 end

@@ -1,4 +1,22 @@
 classdef test_fft_processing < matlab.unittest.TestCase
+
+    methods (TestClassSetup)
+        function addProjectPaths(~)
+            thisFile = mfilename('fullpath');
+            if isempty(thisFile)
+                thisFile = which(mfilename('class'));
+            end
+            if isempty(thisFile)
+                warning('TestPathSetup:UnableToResolveFile', 'Could not resolve test file path.');
+                return;
+            end
+            repoRoot = fileparts(fileparts(thisFile));
+            addpath(genpath(fullfile(repoRoot, 'src')));
+            addpath(fullfile(repoRoot, 'tests'));
+            addpath(fullfile(repoRoot, 'scripts'));
+        end
+    end
+
     methods (Test)
         function computeFftFindsDominantFrequency(testCase)
             fs = 1000;
@@ -13,6 +31,30 @@ classdef test_fft_processing < matlab.unittest.TestCase
             testCase.verifyTrue(isfield(result, 'peaks'));
             testCase.verifyEqual(result.peaks.count, 1);
             testCase.verifyLessThan(abs(result.peaks.items(1).x - f0), 1.5);
+        end
+
+
+        function estimatePeakAcceptsSpectrumStruct(testCase)
+            x = (0:9)';
+            y = [0 1 0 2 0 3 0 1 0 0]';
+            spectrum = struct('frequencyHz', x, 'magnitude', y);
+
+            peaks = estimate_peak_1d(spectrum, struct('numPeaks', 2));
+            testCase.verifyEqual(peaks.count, 2);
+            testCase.verifyEqual(peaks.items(1).x, 5);
+            testCase.verifyEqual(peaks.items(1).y, 3);
+        end
+
+
+
+        function estimatePeakAcceptsSpectrumStructWithoutOpts(testCase)
+            x = (0:9)';
+            y = [0 1 0 2 0 3 0 1 0 0]';
+            spectrum = struct('frequencyHz', x, 'magnitude', y);
+
+            peaks = estimate_peak_1d(spectrum);
+            testCase.verifyGreaterThanOrEqual(peaks.count, 1);
+            testCase.verifyEqual(peaks.items(1).x, 5);
         end
 
         function estimatePeakRejectsLengthMismatch(testCase)

@@ -1,11 +1,15 @@
-function peaks = estimate_peak_1d(xAxis, yAxis, opts)
+function peaks = estimate_peak_1d(xAxisOrSpectrum, yAxisOrOpts, opts)
 %ESTIMATE_PEAK_1D Estimate dominant peaks for a 1D curve.
 %   peaks = ESTIMATE_PEAK_1D(xAxis, yAxis)
 %   peaks = ESTIMATE_PEAK_1D(xAxis, yAxis, opts)
+%   peaks = ESTIMATE_PEAK_1D(spectrumStruct, opts)
 %
 % Inputs
-%   xAxis : numeric vector (x-coordinate, e.g., frequency)
-%   yAxis : numeric vector (y-coordinate, e.g., magnitude)
+%   xAxis / yAxis : numeric vectors (x: frequency-like axis, y: magnitude-like axis)
+%   spectrumStruct: struct with axis/value fields, e.g.
+%       - frequencyHz + magnitude (compute_fft.spectrum contract)
+%       - x + y
+%       - xAxis + yAxis
 %   opts.numPeaks : max number of dominant peaks to return (default 3)
 %
 % Output struct fields
@@ -15,8 +19,27 @@ function peaks = estimate_peak_1d(xAxis, yAxis, opts)
 %   peaks.count
 %   peaks.meta
 
-if nargin < 3 || isempty(opts)
-    opts = struct();
+if nargin < 1
+    error('estimate_peak_1d:InvalidInput', 'Not enough input arguments.');
+end
+
+if isstruct(xAxisOrSpectrum)
+    spectrum = xAxisOrSpectrum;
+    if nargin >= 2 && isstruct(yAxisOrOpts)
+        opts = yAxisOrOpts;
+    else
+        opts = struct();
+    end
+    [xAxis, yAxis] = unpack_spectrum_struct(spectrum);
+else
+    if nargin < 2
+        error('estimate_peak_1d:InvalidInput', 'Vector mode requires xAxis and yAxis.');
+    end
+    xAxis = xAxisOrSpectrum;
+    yAxis = yAxisOrOpts;
+    if nargin < 3 || isempty(opts)
+        opts = struct();
+    end
 end
 
 if ~isfield(opts, 'numPeaks') || isempty(opts.numPeaks)
@@ -73,4 +96,24 @@ peaks.meta = struct(...
     'method', 'local-maxima', ...
     'requestedNumPeaks', opts.numPeaks, ...
     'signalLength', n);
+end
+
+function [xAxis, yAxis] = unpack_spectrum_struct(spectrum)
+if isfield(spectrum, 'frequencyHz') && isfield(spectrum, 'magnitude')
+    xAxis = spectrum.frequencyHz;
+    yAxis = spectrum.magnitude;
+    return;
+end
+if isfield(spectrum, 'x') && isfield(spectrum, 'y')
+    xAxis = spectrum.x;
+    yAxis = spectrum.y;
+    return;
+end
+if isfield(spectrum, 'xAxis') && isfield(spectrum, 'yAxis')
+    xAxis = spectrum.xAxis;
+    yAxis = spectrum.yAxis;
+    return;
+end
+error('estimate_peak_1d:InvalidSpectrumStruct', ...
+    'Struct input must include (frequencyHz,magnitude) or (x,y) or (xAxis,yAxis).');
 end

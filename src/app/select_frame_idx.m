@@ -12,8 +12,5 @@ if frameIdx > state.current_frame_idx
 end
 
 state.selected_frame_idx = frameIdx;
-entry = struct('time', datetime('now'), 'level', 'INFO', ...
-    'message', sprintf('Selected frame: %d', frameIdx));
-state.event_log{end+1} = entry;
-state.last_update_time = entry.time;
+state = update_event_log(state, 'INFO', sprintf('Selected frame: %d', frameIdx));
 end

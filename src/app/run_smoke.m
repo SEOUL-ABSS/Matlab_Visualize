@@ -27,21 +27,14 @@ end
 state = step_frame(state, -1);
 state = configure_waterfall_hold(state, true, [1 state.selected_frame_idx]);
 state = select_main_view(state, 'Waterfall');
-render_dashboard(state);
+fig = figure('Visible', 'off');
+cleanupFig = onCleanup(@() close(fig)); %#ok<NASGU>
+uiState = render_dashboard(state, fig);
 
-outputMat = save_result_mat(state.current_result, fullfile('data', 'output'), 'smoke_result');
-snapshotFile = export_state_snapshot(state, fullfile('data', 'output', 'snapshots'), 'smoke_snapshot');
-summaryFile = export_result_summary(state, fullfile('data', 'output', 'summaries'), 'smoke_summary');
+[state, artifacts] = export_session_artifacts(state, uiState.figure, fullfile('data', 'output'), 'smoke');
 
-log_event(logger, 'INFO', 'Result exported', struct('matFile', outputMat));
-log_event(logger, 'INFO', 'Snapshot exported', struct('snapshotFile', snapshotFile));
-log_event(logger, 'INFO', 'Summary exported', struct('summaryFile', summaryFile));
-
-state.current_result.log.io = struct(...
-    'logFile', logger.filePath, ...
-    'matFile', outputMat, ...
-    'snapshotFile', snapshotFile, ...
-    'summaryFile', summaryFile);
+log_event(logger, 'INFO', 'Session artifacts exported', artifacts);
+state.current_result.log.io.logFile = logger.filePath;
 
 fprintf('run_smoke completed. Current=%d, Selected=%d, View=%s, Preset=%s\n', ...
     state.current_frame_idx, state.selected_frame_idx, state.current_view, state.current_preset);
