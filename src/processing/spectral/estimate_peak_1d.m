@@ -19,7 +19,7 @@ function peaks = estimate_peak_1d(xAxisOrSpectrum, yAxisOrOpts, opts)
 %   peaks.count
 %   peaks.meta
 
-if nargin < 2
+if nargin < 1
     error('estimate_peak_1d:InvalidInput', 'Not enough input arguments.');
 end
 
@@ -32,6 +32,9 @@ if isstruct(xAxisOrSpectrum)
     end
     [xAxis, yAxis] = unpack_spectrum_struct(spectrum);
 else
+    if nargin < 2
+        error('estimate_peak_1d:InvalidInput', 'Vector mode requires xAxis and yAxis.');
+    end
     xAxis = xAxisOrSpectrum;
     yAxis = yAxisOrOpts;
     if nargin < 3 || isempty(opts)

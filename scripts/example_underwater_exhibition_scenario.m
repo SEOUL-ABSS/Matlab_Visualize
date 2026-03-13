@@ -84,14 +84,14 @@ phase2 = secondaryGain * 0.25*sin(2*pi*scenario.secondaryToneHz*t + 0.06*frameId
 
 % phase 3: 분류 구간(짧은 chirp 이벤트)
 chirpGain = double(frameIdx >= 35 && frameIdx <= 48);
-chirpSig = chirpGain * 0.3*chirp(t, scenario.chirpHzStart, t(end), scenario.chirpHzStop);
+chirpSig = chirpGain * 0.3 * synth_lfm_chirp(t, scenario.chirpHzStart, scenario.chirpHzStop);
 
 noise = scenario.noiseStd * randn(n,1);
 x = phase1 + propeller + phase2 + chirpSig + noise;
 
 packet = struct( ...
     'sequence', frameIdx, ...
-    'arrivalTime', datetime(2024,1,1,0,0,frameIdx), ...
+    'arrivalTime', datetime(2024,1,1,0,0,0) + seconds(frameIdx-1), ...
     'payloadBytes', n*4, ...
     'sampleRateHz', fs, ...
     'channelCount', scenario.channelCount, ...
@@ -119,4 +119,16 @@ elseif frameIdx < 40
 else
     label = 'classify';
 end
+end
+
+function y = synth_lfm_chirp(t, f0, f1)
+% toolbox-free linear-FM chirp
+T = t(end) - t(1);
+if T <= 0
+    y = sin(2*pi*f0*t);
+    return;
+end
+k = (f1 - f0) / T;
+phase = 2*pi*(f0*t + 0.5*k*t.^2);
+y = sin(phase);
 end

@@ -2,11 +2,15 @@ classdef test_pipeline_smoke < matlab.unittest.TestCase
 
     methods (TestClassSetup)
         function addProjectPaths(~)
-            testFile = which(mfilename('class'));
-            if isempty(testFile)
+            thisFile = mfilename('fullpath');
+            if isempty(thisFile)
+                thisFile = which(mfilename('class'));
+            end
+            if isempty(thisFile)
+                warning('TestPathSetup:UnableToResolveFile', 'Could not resolve test file path.');
                 return;
             end
-            repoRoot = fileparts(fileparts(testFile));
+            repoRoot = fileparts(fileparts(thisFile));
             addpath(genpath(fullfile(repoRoot, 'src')));
             addpath(fullfile(repoRoot, 'tests'));
             addpath(fullfile(repoRoot, 'scripts'));
